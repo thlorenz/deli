@@ -6,7 +6,5 @@ var bar = require('bar');
 
 var go = module.exports = function () {
   var me = pack.name + '@' + pack.version;
-  return 'me: ' + me + ' common: ' + common() + ' bar: ' + bar();
+  return '[ me: ' + me + ' common: ' + common() + ' bar: ' + bar() + ' ] ';
 };
-
-console.log(go())
