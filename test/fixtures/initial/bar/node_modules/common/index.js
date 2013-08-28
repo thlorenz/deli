@@ -2,5 +2,5 @@
 
 var pack = require('./package.json');
 var go = module.exports = function () {
-  return pack.name + '@' pack.version;  
+  return pack.name + '@' + pack.version;  
 };
