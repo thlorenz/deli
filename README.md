@@ -33,7 +33,7 @@ foo/
    /package.json
    /node_modules/bar -> ../../bar
    /node_modules/bar@
-                /package.json -> ../../bar/package.json -- or a copy if linking doesn't work
+                /package.json copy of ../../bar/package.json with name package name changed to 'bar@' 
                 /node_modules
 bar/
    /.git

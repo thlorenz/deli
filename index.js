@@ -43,6 +43,7 @@ var go = module.exports = function (opts, cb) {
     fs.symlinkSync(pseudoNodeModules, tgtNodeModules); 
 
     // 4. Link ./node_modules/bar@/package.json to ../bar/package.json
+    // TODO: Copy ../bar/package.json to ./node_modules/bar@/package.json and set name to 'bar@' instead of linking
     fs.symlinkSync(tgtPackage, pseudoPackage); 
 
     // 5. Remove ./node_modules/bar
