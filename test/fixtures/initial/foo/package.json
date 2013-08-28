@@ -1,0 +1,7 @@
+{
+  "name": "foo",
+  "version": "0.1.0",
+  "description": "The foo module",
+  "main": "index.js",
+  "dependencies": { "common": "0.1.0" }
+}
