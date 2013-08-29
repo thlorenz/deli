@@ -17,7 +17,8 @@
   "homepage": "https://github.com/thlorenz/ln-s",
   "dependencies": {
     "rimraf": "~2.2.2",
-    "ncp": "~0.4.2"
+    "ncp": "~0.4.2",
+    "npmlog": "0.0.4"
   },
   "devDependencies": {
     "nave": "~0.4.3",
