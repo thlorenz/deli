@@ -1,9 +1,12 @@
 'use strict';
 
-var path = require('path')
-  , fs = require('fs')
-  , rmrf = require('rimraf')
-  , ncp = require('ncp')
+var path =  require('path')
+  , fs   =  require('fs')
+  , rmrf =  require('rimraf')
+  , ncp  =  require('ncp')
+  , cp   =  require('child_process')
+  , exec =  cp.exec
+  , spawn =  cp.spawn
   ;
 
 
@@ -17,7 +20,8 @@ var go = module.exports = function (opts, cb) {
   var root              =  opts.root || ''
     , src               =  path.resolve(root, opts.src)
     , tgt               =  path.resolve(root, opts.tgt)
-    , pseudo            =  src + '@'
+    , pseudo            =  src + '--__--'
+    , pseudoName        =  path.basename(pseudo)
 
     , srcNodeModules    =  path.join(src, 'node_modules')
     , tgtNodeModules    =  path.join(tgt, 'node_modules')
@@ -42,9 +46,10 @@ var go = module.exports = function (opts, cb) {
     // 3. Link ../bar/node_modules to ./node_modules/bar@/node_modules
     fs.symlinkSync(pseudoNodeModules, tgtNodeModules); 
 
-    // 4. Link ./node_modules/bar@/package.json to ../bar/package.json
-    // TODO: Copy ../bar/package.json to ./node_modules/bar@/package.json and set name to 'bar@' instead of linking
-    fs.symlinkSync(tgtPackage, pseudoPackage); 
+    // 4. Copy ../bar/package.json to ./node_modules/bar@/package.json and set name to 'bar@'
+    var pkg = require(tgtPackage);
+    pkg.name = pseudoName;
+    fs.writeFileSync(pseudoPackage, JSON.stringify(pkg, null, 2), 'utf8');
 
     // 5. Remove ./node_modules/bar
     rmrf.sync(src);
@@ -53,6 +58,15 @@ var go = module.exports = function (opts, cb) {
     fs.symlinkSync(tgt, src);
     
     // 7. Run npm dedupe unless --nodedupe is set
+    var dedupe = exec('npm dedupe', { cwd: root }, function (err) {
+      if (err) return console.error(err);
+      require('./test/fixtures/initial-a/');
+    })
+
+    dedupe.stdout.pipe(process.stdout);
+    dedupe.stderr.pipe(process.stderr);
+
+
     // 8  Run npm install if --reinstall is set
   });
 };
@@ -61,8 +75,6 @@ var go = module.exports = function (opts, cb) {
 // Test
 if (!module.parent) {
 
-  var cp = require('child_process')
-  var exec = cp.exec;
   var fixtures = path.join(__dirname, 'test', 'fixtures');
   var from = path.join(fixtures, 'initial');
   var to = path.join(fixtures, 'initial-a');
