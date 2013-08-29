@@ -7,7 +7,7 @@ Dedupes a package and links one of its dependent packages to an implementation o
 `npm dedupe` does not affect packages linked via `npm link` or `ln -s`. This breaks in scenarios where it is crucial
 that certain packages are deduped, i.e. if only one instance of them is allowed in an application.
 
-**deli**  - short for de*dupe*-li*nk* - solves this by performing the link and dedupe step concurrently to make both
+**deli**, short for de *dupe* - li *nk*, solves this by performing the link and dedupe step concurrently to make both
 features work together. In order to make the node module lookup work as if the linked package was still in the
 `node_modules` directory, it creates a pseudo package and creates symbolic links as neede.
 
