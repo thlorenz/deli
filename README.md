@@ -1,13 +1,13 @@
-# ln-s [![build status](https://secure.travis-ci.org/thlorenz/ln-s.png)](http://travis-ci.org/thlorenz/ln-s)
+# deli [![build status](https://secure.travis-ci.org/thlorenz/deli.png)](http://travis-ci.org/thlorenz/deli)
 
-Dedupes a package and links a dependent to an implementation outside of the package's directory tree.
+Dedupes a package and links one of its dependent packages to an implementation outside of the package's directory tree.
 
 ### Why?
 
 `npm dedupe` does not affect packages linked via `npm link` or `ln -s`. This breaks in scenarios where it is crucial
 that certain packages are deduped, i.e. if only one instance of them is allowed in an application.
 
-**ln-s**  - short for de*dedupe*-li*nk* - solves this by performing the link and dedupe step concurrently to make both
+**deli**  - short for de*dupe*-li*nk* - solves this by performing the link and dedupe step concurrently to make both
 features work together. In order to make the node module lookup work as if the linked package was still in the
 `node_modules` directory, it creates a pseudo package and creates symbolic links as neede.
 
@@ -50,7 +50,7 @@ Link bar module to the implementation that is foo's sibling and dedupe packages.
 └── index.js
 ```
 
-#### Result of running ln-s including `npm dedupe`
+#### Result of running deli including `npm dedupe`
 
 ```
 .
@@ -83,7 +83,7 @@ Link bar module to the implementation that is foo's sibling and dedupe packages.
 
 ## Installation
 
-    npm install ln-s
+    npm install deli
 
 ## API
 
