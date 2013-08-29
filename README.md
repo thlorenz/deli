@@ -10,45 +10,57 @@ Link bar module to the implementation that is foo's sibling
 #### Initial structure:
 
 ```
-foo/
-   /.git
-   /index.js
-   /package.json
-   /node_modules/bar
-                /package.json
-                /node_modules
-bar/
-   /.git
-   /index.js
-   /package.json
-   /node_modules
+.
+├── bar
+│   ├── index.js
+│   ├── node_modules
+│   │   └── foobar-common
+│   │       ├── index.js
+│   │       └── package.json
+│   └── package.json
+└── foo
+    ├── index.js
+    ├── node_modules
+    │   ├── bar
+    │   │   ├── index.js
+    │   │   ├── node_modules
+    │   │   │   └── foobar-common
+    │   │   │       ├── index.js
+    │   │   │       └── package.json
+    │   │   └── package.json
+    │   └── foobar-common
+    │       ├── index.js
+    │       └── package.json
+    └── package.json
 ```
 
-#### Result:
+#### Result of running ln-s including `npm dedupe`
 
 ```
-foo/
-   /.git
-   /index.js
-   /package.json
-   /node_modules/bar -> ../../bar
-   /node_modules/bar@
-                /package.json copy of ../../bar/package.json with name package name changed to 'bar@' 
-                /node_modules
-bar/
-   /.git
-   /index.js
-   /package.json
-   /node_modules -> ../../foo/node_modules/bar@/node_modules
+.
+├── bar
+│   ├── index.js -> ../../foo/node_modules/bar/index.js
+│   ├── node_modules
+│   │   └── foobar-common
+│   │       ├── index.js
+│   │       └── package.json
+│   └── package.json -> ../../foo/node_modules/bar/package.json
+└── foo
+    ├── index.js
+    ├── node_modules
+    │   ├── bar
+    │   │   ├── index.js
+    │   │   ├── node_modules
+    │   │   └── package.json
+    │   └── foobar-common
+    │       ├── index.js
+    │       └── package.json
+    └── package.json
 ```
 
 #### How it works:
 
-Since we are linking the actual `bar/node_modules` back into the same directory tree structure where `bar` was installed as
-a module - via the pseudo `bar@`, `npm dedupe` works as it usually does.
-
-Essentially the `bar@` pseudo module only exists to act in place of an installed `bar` at least as far as `npm dedupe`
-is concerned. 
+Since we keep the `bar` directory where it is, tools like `npm dedupe` work just as before.
 
 ```js
 // TODO
