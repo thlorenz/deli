@@ -9,7 +9,7 @@ that certain packages are deduped, i.e. if only one instance of them is allowed 
 
 **deli**, short for de *dupe* - li *nk*, solves this by performing the link and dedupe step concurrently to make both
 features work together. In order to make the node module lookup work as if the linked package was still in the
-`node_modules` directory, it creates a pseudo package and creates symbolic links as neede.
+`node_modules` directory, it creates a pseudo package and creates symbolic links as needed.
 
 
 ### Example 
@@ -56,13 +56,13 @@ Link bar module to the implementation that is foo's sibling and dedupe packages.
 .
 ├── bar               -- implementation outside of node_modules
 │   ├── index.js
-│   ├── node_modules -> ../foo/node_modules/bar--__--/node_modules     -- link into main node_modules
+│   ├── node_modules -> ../foo/node_modules/bar--__--/node_modules  -- link into main node_modules
 │   └── package.json
 ├── foo
 │   ├── index.js
 │   ├── node_modules
 │   │   ├── bar -> ../../bar                                -- link to implementation
-│   │   ├── bar--__--                                       -- link to pseudo package
+│   │   ├── bar--__--                                       -- pseudo package
 │   │   │   ├── node_modules
 │   │   │   │   ├── foobar-common -> ../../foobar-common    -- link to deduped package
 │   │   │   │   └── foobar-not-common
