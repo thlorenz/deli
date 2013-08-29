@@ -1,6 +1,6 @@
 {
   "name": "deli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Dedupes a package and links one of its dependent packages to an implementation outside of the package's directory tree.",
   "main": "index.js",
   "scripts": {
