@@ -10,20 +10,24 @@ var path =  require('path')
   ;
 
 
-// Readme Example:
-// foo/node_modules/bar is src
-// bar                  is tgt 
+// Handling only direct node_modules i.e. contained right inside the node_modules dir
+// Comments based on foo and bar being sibling dirs and foo having installed bar as inside ./foo/node_modules:
+// src: ./foo/node_modules/bar 
+// tgt: ../bar                  
 var go = module.exports = function (opts, cb) {
   // All steps can by sync since this will only be used as part of a command line tool
   // TODO: Allow just passing bar and figure out that it is in ./node_modules
 
   var root              =  opts.root || ''
     , src               =  path.resolve(root, opts.src)
+      // two up from the node_module we are linking
+    , main              =  path.dirname(src).split(path.sep).slice(0, -1).join(path.sep)
     , tgt               =  path.resolve(root, opts.tgt)
     , pseudo            =  src + '--__--'
     , pseudoName        =  path.basename(pseudo)
-
+     
     , srcNodeModules    =  path.join(src, 'node_modules')
+    , mainNodeModules   =  path.join(main, 'node_modules')
     , tgtNodeModules    =  path.join(tgt, 'node_modules')
     , pseudoNodeModules =  path.join(pseudo, 'node_modules')
 
@@ -39,35 +43,37 @@ var go = module.exports = function (opts, cb) {
     console.error(e);
   }
   
-  // 2. Move ../bar/node_modules to ./node_modules/bar@/node_modules
+  // Move ../bar/node_modules to ./node_modules/bar@/node_modules
   ncp(tgtNodeModules, pseudoNodeModules, function (err) {
     rmrf.sync(tgtNodeModules);    
 
-    // 3. Link ../bar/node_modules to ./node_modules/bar@/node_modules
-    fs.symlinkSync(pseudoNodeModules, tgtNodeModules); 
+    // Link ./bar/node_modules -> ./foo/node_modules  -- to simulate upwards lookup for deduped modules which breaks when linked
+    fs.symlinkSync(mainNodeModules, tgtNodeModules); 
+    
+    // Link ./bar/node_modules/node_modules -> ./foo/node_modules/bar/node_modules -- for non-deduped modules
+    fs.symlinkSync(pseudoNodeModules, path.join(tgtNodeModules, 'node_modules'));
 
-    // 4. Copy ../bar/package.json to ./node_modules/bar@/package.json and set name to 'bar@'
+    // Copy ../bar/package.json to ./node_modules/bar@/package.json and set name to 'bar@'
     var pkg = require(tgtPackage);
     pkg.name = pseudoName;
     fs.writeFileSync(pseudoPackage, JSON.stringify(pkg, null, 2), 'utf8');
 
-    // 5. Remove ./node_modules/bar
+    // Remove ./node_modules/bar
     rmrf.sync(src);
 
-    // 6. Link ./node_modules/bar to ../bar/node_modules
+    // Link ./node_modules/bar -> ../bar
     fs.symlinkSync(tgt, src);
     
-    // 7. Run npm dedupe unless --nodedupe is set
+    // Run npm dedupe unless --nodedupe is set
     var dedupe = exec('npm dedupe', { cwd: root }, function (err) {
       if (err) return console.error(err);
-      require('./test/fixtures/initial-a/');
+      console.log(require('./test/fixtures/initial-a/')());
     })
-
     dedupe.stdout.pipe(process.stdout);
     dedupe.stderr.pipe(process.stderr);
 
 
-    // 8  Run npm install if --reinstall is set
+    // Run npm install if --reinstall is set
   });
 };
 
